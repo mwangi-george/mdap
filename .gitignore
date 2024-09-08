@@ -19,3 +19,7 @@ frontend/.Rhistory
 frontend/frontend.Rproj
 frontend/working_space.Rmd
 .Rproj.user
+
+# pycharm files
+.idea/
+
