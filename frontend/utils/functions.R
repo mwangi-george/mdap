@@ -56,7 +56,7 @@ notification_modal <- function(notification_title, notification_text) {
   ))
 }
 
-transactions_output_model <- function(){
+transactions_output_model <- function() {
   output_model <- tibble(
     id = integer(),
     transaction_code = character(),
@@ -163,6 +163,103 @@ regiser_user_func <- function(
     },
     error = function(e) {
       return(e$message)
+    }
+  )
+}
+
+
+transactions_data_4_valuebox_func <- memoise(
+  function(data_with_transactions) {
+    # This function processes a dataset of transaction data to calculate the total transaction amount,
+    # total transaction cost, and the total number of transactions.
+    # It converts transaction amounts and costs to numeric values, handles any potential errors or warnings,
+    # and returns a summary of these key metrics.
+    # The function is memoised to cache results for improved performance.
+
+
+    tryCatch(
+      expr = {
+        results <- suppressWarnings(
+          expr = {
+            data_with_transactions %>%
+              mutate(
+                transaction_amount = as.numeric(transaction_amount),
+                transaction_cost = as.numeric(transaction_cost)
+              ) %>%
+              summarise(
+                transaction_amount = sum(transaction_amount, na.rm = TRUE),
+                transaction_cost = sum(transaction_cost, na.rm = TRUE),
+                total_transactions = n()
+              )
+          }
+        )
+        return(results)
+      },
+      error = function(e) {
+        print(e$message)
+        return(e$message)
+      }
+    )
+  },
+  cache = cachem::cache_mem(max_age = 15)
+)
+
+
+# Function Template to create a box template for shiny app
+plain_box_template <- function(height = 600, width = 6, title_text = NULL, ...) {
+  box(
+    height = height,
+    width = width,
+    title = title_text,
+    collapsible = TRUE,
+    collapsed = FALSE,
+    status = "maroon",
+    solidHeader = TRUE,
+    ...
+  )
+}
+
+# This function creates a bar or column chart from a dataset containing transaction data.
+# The chart displays the top 10 most frequent values in a specified column and includes customizable titles and axis labels.
+create_bar_or_column_chart_func <- function(
+    data_with_transactions, chart_type, column_to_count, title_text, subtitle_text, x_axis_text, y_axis_text) {
+  tryCatch(
+    expr = {
+      data_with_transactions %>%
+        count(!!rlang::sym(column_to_count), name = "count") %>%
+        arrange(desc(count)) %>%
+        head(10) %>%
+        hchart(
+          type = chart_type,
+          hcaes(!!rlang::sym(column_to_count), count),
+          showInLegend = FALSE,
+          maxSize = "15%",
+          dataLabels = list(enabled = TRUE)
+        ) %>%
+        hc_colors(colors = c(
+          "#9e0142", "#d53e4f", "#f46d43", "#fdae61", "#fee08b",
+          "#e6f598", "#abdda4", "#66c2a5", "#3288bd", "#5e4fa2"
+        )) %>%
+        hc_exporting(enabled = TRUE) %>%
+        hc_tooltip(crosshairs = TRUE, backgroundColor = "white", shared = F, borderWidth = 4) %>%
+        hc_title(
+          text = title_text,
+          align = "left",
+          style = list(fontweight = "bold", fontsize = "15px")
+        ) %>%
+        hc_subtitle(
+          text = paste("Showing data for ", subtitle_text),
+          align = "left",
+          style = list(fontweight = "bold", fontsize = "13px")
+        ) %>%
+        hc_add_theme(hc_theme_elementary()) %>%
+        hc_chart(zoomType = "x") %>%
+        hc_xAxis(title = list(text = x_axis_text)) %>%
+        hc_yAxis(title = list(text = y_axis_text), labels = list(enabled = FALSE)) %>%
+        hc_plotOptions(series = list(states = list(hover = list(enabled = TRUE, color = "red"))))
+    },
+    error = function(e) {
+      return(e)
     }
   )
 }

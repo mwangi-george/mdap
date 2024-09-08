@@ -91,7 +91,7 @@ server <- function(input, output, session) {
   # Call Transactions Module
   observe({
     req(input$login)
-    get_transactions_server("transactions_mod", access_token())
+    get_transactions_server("transactions_mod", access_token(), active_user = input$api_user)
   })
   
   output$current_userOutput <- renderUI({
