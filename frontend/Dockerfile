@@ -27,6 +27,7 @@ WORKDIR mdap
 
 # copy the necessary files & folders
 COPY dependencies.R ./dependencies.R
+COPY dependencies_load.R ./dependencies_load.R
 COPY global.R ./global.R
 COPY server.R ./server.R
 COPY ui.R ./ui.R
