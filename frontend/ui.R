@@ -1,17 +1,5 @@
 
-library(tidyverse)
-library(fs)
-library(shinyjs)
-library(httr)
-library(shiny)
-library(shinydashboard)
-library(memoise)
-library(shinyWidgets)
-library(jsonlite)
-library(reactable)
-library(glue)
-library(shinydashboardPlus)
-library(shinyalert)
+source("./dependencies_load.R")
 
 ## UI building ----------------------------------------------
 data_page <- dashboardPage(

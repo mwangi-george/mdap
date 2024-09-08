@@ -1,12 +1,4 @@
-
-library(tidyverse)
-library(fs)
-library(httr)
-library(memoise)
-library(jsonlite)
-library(reactable)
-library(glue)
-
+source("./dependencies_load.R")
 
 generate_base_url <- function(production = FALSE) {
   if (production == TRUE) {

@@ -1,22 +1,6 @@
+source("./dependencies_load.R")
 
-library(dplyr)
-library(purrr)
-library(tidyr)
-library(tibble)
-library(lubridate)
-library(fs)
-library(shinyjs)
-library(httr)
-library(shiny)
-library(shinydashboard)
-library(memoise)
-library(shinyWidgets)
-library(jsonlite)
-library(reactable)
-library(glue)
-library(shinydashboardPlus)
-library(shinyalert)
-
+# UI
 get_transactions_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -50,6 +34,7 @@ get_transactions_ui <- function(id){
   )
 }
 
+# Logic
 get_transactions_server <- function(id, auth_token){
   moduleServer(id, function(input,output, session) {
     
