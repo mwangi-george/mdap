@@ -197,7 +197,8 @@ transactions_data_4_valuebox_func <- memoise(
     # It converts transaction amounts and costs to numeric values, handles any potential errors or warnings,
     # and returns a summary of these key metrics.
     # The function is memoised to cache results for improved performance.
-
+    
+    default_table_if_error_occurs <- tibble(transaction_amount = 0, transaction_cost = 0, total_transactions = 0)
 
     tryCatch(
       expr = {
@@ -205,7 +206,9 @@ transactions_data_4_valuebox_func <- memoise(
           expr = {
             data_with_transactions %>%
               mutate(
+                transaction_amount = str_remove_all(transaction_amount, ","),
                 transaction_amount = as.numeric(transaction_amount),
+                transaction_cost = str_remove_all(transaction_cost, ","),
                 transaction_cost = as.numeric(transaction_cost)
               ) %>%
               summarise(
@@ -219,7 +222,7 @@ transactions_data_4_valuebox_func <- memoise(
       },
       error = function(e) {
         print(e$message)
-        return(e$message)
+        return(default_table_if_error_occurs)
       }
     )
   },
