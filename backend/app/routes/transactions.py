@@ -47,4 +47,15 @@ def create_transaction_router() -> APIRouter:
         formatted_transactions = ManyTransactions(transactions=transactions)
         return formatted_transactions
 
+    @router.delete("/delete", response_model=ActionConfirm, status_code=status.HTTP_200_OK)
+    async def delete_transaction(
+            transaction_code: str,
+            db: Session = Depends(get_db),
+            current_user: User = Depends(security.get_current_user)
+    ):
+        user_id = current_user.id
+        transaction = transaction_services.delete_transaction_by_code(transaction_code, user_id, db)
+        formatted_msg = ActionConfirm(msg=transaction)
+        return formatted_msg
+
     return router
