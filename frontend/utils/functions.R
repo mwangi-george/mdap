@@ -17,7 +17,7 @@ login_func <- memoise(
     tryCatch(
       expr = {
         response <- POST(
-          url = str_c(base_url_path, "users/login/"),
+          url = str_c(base_url_path, "users/login"),
           add_headers(
             accept = "application/json",
             `Content-Type` = "application/x-www-form-urlencoded"
@@ -166,6 +166,28 @@ regiser_user_func <- function(
     }
   )
 }
+
+
+# DELETE a transaction
+delete_a_transaction_func <- function(endpoint, transaction_code, auth_code) {
+    tryCatch(
+      expr = {
+        response <- DELETE(
+          endpoint,
+          query = list(transaction_code = transaction_code),
+          add_headers(
+            accept = "application/json",
+            Authorization = str_c("Bearer ", auth_code)
+          )
+        )
+        return(response)
+      }, 
+      error = function(e) {
+        return(e$message)
+      }
+    )
+}
+  
 
 
 transactions_data_4_valuebox_func <- memoise(
