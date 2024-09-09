@@ -18,11 +18,7 @@ get_transactions_ui <- function(id){
       plain_box_template(600, 6, title_text = " ", highchartOutput(ns("top_10_counterparties")))
     ),
     fluidRow(
-      plain_box_template(
-        850, 12, 
-        title_text = "Transaction history",
-        reactableOutput(ns("all_transactions_table"))
-      )
+      plain_box_template(850, 12, title_text = "Transaction history", reactableOutput(ns("all_transactions_table")))
     )
   )
 }
@@ -33,7 +29,7 @@ get_transactions_server <- function(id, auth_token, active_user){
     # namespace to access ui elements created in the server side
     ns <- session$ns
     
-    # Fetch existing transaction for current user
+    # Fetch existing transaction for current user ---------------------------
     transactions_4_current_user <- eventReactive(input$fetch_all_transactions, {
       
       get_req_endpoint <- str_c(generate_base_url(in_production), "transactions/retrieve/all")
@@ -59,31 +55,18 @@ get_transactions_server <- function(id, auth_token, active_user){
       return(query_output)
     })
     
+    ## Value boxes ------------
     observe({
       req(transactions_4_current_user())
       
       transactions_data_4_valuebox <- transactions_data_4_valuebox_func(transactions_4_current_user())
-      print(transactions_data_4_valuebox)
-      
-      value_to_render_func <- function(value) {
-        # custom function to format value to render in infoboxes
-        val <- suppressWarnings(
-          case_when(
-            is.null(value) ~ 0, 
-            is.character(value) ~ 0,
-            is.list(value) ~ 0,
-            .default = as.numeric(value)
-          )
-        )
-        return(val)
-      }
       
       output$total_transactions <- renderInfoBox({
         infoBox(
           width = 12,
           title = "",
           subtitle = "Total Transactions",
-          value = prettyNum(value_to_render_func(transactions_data_4_valuebox$total_transactions), big.mark = ", "),
+          value = prettyNum(transactions_data_4_valuebox$total_transactions, big.mark = ", "),
           color = "teal",
           icon = icon("laptop-code")
         )
@@ -94,7 +77,7 @@ get_transactions_server <- function(id, auth_token, active_user){
           width = 12,
           title = "",
           subtitle = "Total Amount Transacted",
-          value = prettyNum(value_to_render_func(transactions_data_4_valuebox$transaction_amount), big.mark = ", "),
+          value = prettyNum(transactions_data_4_valuebox$transaction_amount, big.mark = ", "),
           color = "teal",
           icon = icon("laptop-code")
         )
@@ -105,12 +88,13 @@ get_transactions_server <- function(id, auth_token, active_user){
           width = 12,
           title = "",
           subtitle = "Total Transaction Costs",
-          value = prettyNum(value_to_render_func(transactions_data_4_valuebox$transaction_cost), big.mark = ", "),
+          value = prettyNum(transactions_data_4_valuebox$transaction_cost, big.mark = ", "),
           color = "teal",
           icon = icon("laptop-code")
         )
       })
       
+      ## charts ---------------------
       output$top_10_counterparties <- renderHighchart({
         
         create_bar_or_column_chart_func(
@@ -139,7 +123,7 @@ get_transactions_server <- function(id, auth_token, active_user){
       
     })
     
-    # Registering a transaction --------------
+    ### Registering a transaction --------------
     observeEvent(input$trigger_transaction_register_button, {
       showModal(modalDialog(
         title = "Register a transaction",
@@ -182,7 +166,7 @@ get_transactions_server <- function(id, auth_token, active_user){
       }
     })
     
-    # Deleting a transaction --------------
+    ### Deleting a transaction -------------------------------
     
     # Trigger to transaction deletion modal
     observeEvent(input$trigger_transaction_delete_button, {
@@ -205,7 +189,6 @@ get_transactions_server <- function(id, auth_token, active_user){
       deletion_response <- delete_a_transaction_func(delete_req_endpoint, input$transaction_code_to_delete, auth_token)
       s_code <- deletion_response %>% status_code()
       message <- deletion_response %>% content()
-      print(message)
       
       if (s_code == 200L) {
         shinyalert("Deletion Successful!", message[[1]], type = "success", closeOnClickOutside = TRUE)
@@ -215,7 +198,7 @@ get_transactions_server <- function(id, auth_token, active_user){
         shinyalert("Oops!", message[[1]], type = "error", closeOnClickOutside = TRUE)
       } 
     })
-    
+    # End of module
   })
 }
 
