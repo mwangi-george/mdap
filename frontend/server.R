@@ -65,7 +65,7 @@ server <- function(input, output, session) {
     req(input$reg_pass)
     req(input$reg_username)
     
-    registration_req_endpoint <- str_c(generate_base_url(in_production), "users/register/")
+    registration_req_endpoint <- str_c(generate_base_url(in_production), "users/register")
     
     registration_response <- regiser_user_func(
       endpoint = registration_req_endpoint, 
