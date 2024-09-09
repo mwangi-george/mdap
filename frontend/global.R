@@ -19,4 +19,5 @@ options(
 in_production <- F
 
 # color palette for the application
-app_color_palette <- c("#5bcefa", "#00ffff", "#ffffff", "#2d677d", "#000000")
+app_color_palette <- c("green", "#5bcefa", "#00ffff", "#ffffff", "#2d677d", "#000000")
+
