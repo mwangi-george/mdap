@@ -10,6 +10,7 @@ backend/app/security/__pycache__/
 backend/app/services/__pycache__/
 backend/app/schemas/__pycache__/
 backend/app/models/__pycache__/
+backend/Mpesa.db
 
 
 # Frontend files
