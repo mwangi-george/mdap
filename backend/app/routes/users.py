@@ -15,18 +15,18 @@ def create_user_router() -> APIRouter:
     )
     user_services = UserServices()
 
-    @router.post("/register/", response_model=ActionConfirm, status_code=status.HTTP_201_CREATED)
+    @router.post("/register", response_model=ActionConfirm, status_code=status.HTTP_201_CREATED)
     async def register_user(user: UserCreate, db: Session = Depends(get_db)):
         msg = user_services.register_user(user, db)
         formatted_msg = ActionConfirm(msg=msg)
         return formatted_msg
 
-    @router.post("/login/", response_model=Token, status_code=status.HTTP_200_OK)
+    @router.post("/login", response_model=Token, status_code=status.HTTP_200_OK)
     async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
         token = user_services.login_user(form_data.username, form_data.password, db)
         return token
 
-    @router.get("/fetch/all/", response_model=ManyUsersResponse, status_code=status.HTTP_200_OK)
+    @router.get("/fetch/all", response_model=ManyUsersResponse, status_code=status.HTTP_200_OK)
     async def fetch_all_users(start: int = 0, limit: int = 20, db: Session = Depends(get_db)):
         try:
             users = user_services.fetch_all_users(start=start, limit=limit, db=db)
