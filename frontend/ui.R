@@ -5,7 +5,7 @@ source("./dependencies_load.R")
 data_page <- dashboardPage(
   options = list(sidebarExpandOnHover = TRUE),
   header, sidebar, body, controlbar, footer,
-  skin = "green"
+  skin = app_color_palette[1]
 )
 
 ui <- fluidPage(
