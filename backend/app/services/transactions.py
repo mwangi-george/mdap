@@ -126,3 +126,24 @@ class TransactionsServices:
     def retrieve_all_transactions_by_user_id(user_id: int, db: Session) -> [Transaction]:
         db_transactions = db.query(Transaction).filter_by(user_id=user_id).all()
         return db_transactions
+
+    @staticmethod
+    def delete_transaction_by_code(transaction_code: str, user_id: int, db: Session) -> str:
+        db_transaction = db.query(Transaction).filter(
+            and_(Transaction.transaction_code == transaction_code, Transaction.user_id == user_id)
+        ).first()
+        if db_transaction is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Transaction with code {transaction_code} does not exist!"
+            )
+        try:
+            db.delete(db_transaction)
+            db.commit()
+            return f"Transaction with code {transaction_code} deleted successfully!"
+        except Exception as e:
+            print(e)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to delete transaction!"
+            )
