@@ -74,8 +74,8 @@ transactions_output_model <- function() {
 
 
 # Get all transactions -- cached
-get_all_transactions <- memoise(
-  function(endpoint, auth_token) {
+get_all_transactions <- # memoise(
+  function(endpoint, auth_token, user = "George") {
     tryCatch(
       expr = {
         # make api call
@@ -92,10 +92,10 @@ get_all_transactions <- memoise(
           content() %>%
           toJSON(auto_unbox = TRUE) %>%
           fromJSON()
-
-        # this print helps know whether caching is working
-        print(glue("An api call was made at {Sys.time()}"))
-
+        
+        if (response %>% status_code() == 200L) {
+          print(glue("{user} fetched all their transactions at {Sys.time()}"))
+        }
         # data frame is in index 1
         return(response_df[[1]])
       },
@@ -103,14 +103,13 @@ get_all_transactions <- memoise(
         return(e$message)
       }
     )
-  },
+  }
   # Make the memoized result automatically time out after 15 seconds.
-  cache = cachem::cache_mem(max_age = 15)
-)
+#   cache = cachem::cache_mem(max_age = 5)
+# )
 
 
-post_a_transaction <- function(endpoint, auth_token, transaction_message) {
-  print(glue("A post request was made at {Sys.time()}"))
+post_a_transaction <- function(endpoint, auth_token, transaction_message, user = "George") {
   tryCatch(
     expr = {
       response <- POST(
@@ -125,6 +124,11 @@ post_a_transaction <- function(endpoint, auth_token, transaction_message) {
         ),
         encode = "json"
       )
+      
+      if (response %>% status_code() == 201L) {
+        print(glue("{user} posted a transaction at {Sys.time()}"))
+      }
+      
       return(response)
     },
     error = function(e) {
@@ -141,10 +145,10 @@ regiser_user_func <- function(
     mpesa_number = "+254700111222",
     username = "john_doe",
     password = "0987") {
-  print(glue("A user registeration post request was made at {Sys.time()}"))
+  
   tryCatch(
     expr = {
-      res <- POST(
+      response <- POST(
         endpoint,
         add_headers(
           accept = "application/json",
@@ -159,7 +163,11 @@ regiser_user_func <- function(
         ),
         encode = "json"
       )
-      return(res)
+      if (response %>% status_code() == 201L) {
+        print(glue("A new user has been registered with username: {username}"))
+      }
+      
+      return(response)
     },
     error = function(e) {
       return(e$message)
@@ -169,7 +177,7 @@ regiser_user_func <- function(
 
 
 # DELETE a transaction
-delete_a_transaction_func <- function(endpoint, transaction_code, auth_code) {
+delete_a_transaction_func <- function(endpoint, transaction_code, auth_code, user = "George") {
     tryCatch(
       expr = {
         response <- DELETE(
@@ -180,6 +188,9 @@ delete_a_transaction_func <- function(endpoint, transaction_code, auth_code) {
             Authorization = str_c("Bearer ", auth_code)
           )
         )
+        if (response %>% status_code() == 200L) {
+          print(glue("{user} deleted a transaction with code: {transaction_code}"))
+        }
         return(response)
       }, 
       error = function(e) {
@@ -190,7 +201,7 @@ delete_a_transaction_func <- function(endpoint, transaction_code, auth_code) {
   
 
 
-transactions_data_4_valuebox_func <- memoise(
+summarize_fetched_transactions <- memoise(
   function(data_with_transactions) {
     # This function processes a dataset of transaction data to calculate the total transaction amount,
     # total transaction cost, and the total number of transactions.
