@@ -19,14 +19,17 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get clean
 
-# Create a working directory
+# Create and set working directory
 RUN mkdir -p /mdap
-
-# Set working directory
 WORKDIR mdap
 
-# copy the necessary files & folders
+# Copy R dependencies first to cache them
 COPY dependencies.R ./dependencies.R
+
+# Install R packages
+RUN Rscript /mdap/dependencies.R
+
+# Copy the rest of the files
 COPY dependencies_load.R ./dependencies_load.R
 COPY global.R ./global.R
 COPY server.R ./server.R
@@ -36,13 +39,7 @@ COPY modules/ ./modules/
 COPY ui/ ./ui/
 COPY utils/ ./utils/
 
-# check if files were copied
-RUN ls -l /mdap
-
-## install R-packages
-RUN Rscript /mdap/dependencies.R
-
-# source global file first
+# run global file before starting the shiny app
 RUN Rscript /mdap/global.R
 
 # expose port

@@ -5,14 +5,16 @@ FROM python:3.12-alpine
 RUN mkdir -p /mdap
 
 # Set working directory
+WORKDIR /mdap
 
-WORKDIR mdap
+# Copy the requirements file first (for caching purposes)
+COPY ./requirements.txt ./requirements.txt
 
-# Copy all files into the set working directory
-COPY ./ ./
-
-# install the dependencies
+# Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy all other files after installing dependencies
+COPY ./ ./
 
 # Create a volume to persist data
 VOLUME ["/mdap/data"]
