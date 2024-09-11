@@ -1,7 +1,8 @@
 transactions_tab <- tabItem(
   tabName = "user_transactions",
   fluidRow(
-    fetch_transactions_ui("fetch_transactions"),
+    actionBttn("fetch_transactions_button", label = "Fetch Transactions"),
+    # fetch_transactions_ui("fetch_transactions"),
     post_transaction_ui("post_transaction"),
     delete_transaction_ui("delete_transaction")
   ),

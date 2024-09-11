@@ -74,7 +74,7 @@ transactions_output_model <- function() {
 
 
 # Get all transactions -- cached
-get_all_transactions <- # memoise(
+get_all_transactions <- memoise(
   function(endpoint, auth_token, user = "George") {
     tryCatch(
       expr = {
@@ -92,7 +92,7 @@ get_all_transactions <- # memoise(
           content() %>%
           toJSON(auto_unbox = TRUE) %>%
           fromJSON()
-        
+
         if (response %>% status_code() == 200L) {
           print(glue("{user} fetched all their transactions at {Sys.time()}"))
         }
@@ -103,10 +103,10 @@ get_all_transactions <- # memoise(
         return(e$message)
       }
     )
-  }
-  # Make the memoized result automatically time out after 15 seconds.
-#   cache = cachem::cache_mem(max_age = 5)
-# )
+  },
+  cache = cachem::cache_mem(max_age = 10)
+)
+
 
 
 post_a_transaction <- function(endpoint, auth_token, transaction_message, user = "George") {
@@ -124,11 +124,11 @@ post_a_transaction <- function(endpoint, auth_token, transaction_message, user =
         ),
         encode = "json"
       )
-      
+
       if (response %>% status_code() == 201L) {
         print(glue("{user} posted a transaction at {Sys.time()}"))
       }
-      
+
       return(response)
     },
     error = function(e) {
@@ -145,7 +145,6 @@ regiser_user_func <- function(
     mpesa_number = "+254700111222",
     username = "john_doe",
     password = "0987") {
-  
   tryCatch(
     expr = {
       response <- POST(
@@ -166,7 +165,7 @@ regiser_user_func <- function(
       if (response %>% status_code() == 201L) {
         print(glue("A new user has been registered with username: {username}"))
       }
-      
+
       return(response)
     },
     error = function(e) {
@@ -178,68 +177,64 @@ regiser_user_func <- function(
 
 # DELETE a transaction
 delete_a_transaction_func <- function(endpoint, transaction_code, auth_code, user = "George") {
-    tryCatch(
-      expr = {
-        response <- DELETE(
-          endpoint,
-          query = list(transaction_code = transaction_code),
-          add_headers(
-            accept = "application/json",
-            Authorization = str_c("Bearer ", auth_code)
-          )
+  tryCatch(
+    expr = {
+      response <- DELETE(
+        endpoint,
+        query = list(transaction_code = transaction_code),
+        add_headers(
+          accept = "application/json",
+          Authorization = str_c("Bearer ", auth_code)
         )
-        if (response %>% status_code() == 200L) {
-          print(glue("{user} deleted a transaction with code: {transaction_code}"))
-        }
-        return(response)
-      }, 
-      error = function(e) {
-        return(e$message)
+      )
+      if (response %>% status_code() == 200L) {
+        print(glue("{user} deleted a transaction with code: {transaction_code}"))
       }
-    )
+      return(response)
+    },
+    error = function(e) {
+      return(e$message)
+    }
+  )
 }
-  
 
 
-summarize_fetched_transactions <- memoise(
-  function(data_with_transactions) {
-    # This function processes a dataset of transaction data to calculate the total transaction amount,
-    # total transaction cost, and the total number of transactions.
-    # It converts transaction amounts and costs to numeric values, handles any potential errors or warnings,
-    # and returns a summary of these key metrics.
-    # The function is memoised to cache results for improved performance.
-    
-    default_table_if_error_occurs <- tibble(transaction_amount = 0, transaction_cost = 0, total_transactions = 0)
 
-    tryCatch(
-      expr = {
-        results <- suppressWarnings(
-          expr = {
-            data_with_transactions %>%
-              mutate(
-                transaction_amount = str_remove_all(transaction_amount, ","),
-                transaction_amount = as.numeric(transaction_amount),
-                transaction_cost = str_remove_all(transaction_cost, ","),
-                transaction_cost = as.numeric(transaction_cost)
-              ) %>%
-              summarise(
-                transaction_amount = sum(transaction_amount, na.rm = TRUE),
-                transaction_cost = sum(transaction_cost, na.rm = TRUE),
-                total_transactions = n()
-              )
-          }
-        )
-        return(results)
-      },
-      error = function(e) {
-        print(e$message)
-        return(default_table_if_error_occurs)
-      }
-    )
-  },
-  cache = cachem::cache_mem(max_age = 15)
-)
+summarize_fetched_transactions <- function(data_with_transactions) {
+  # This function processes a dataset of transaction data to calculate the total transaction amount,
+  # total transaction cost, and the total number of transactions.
+  # It converts transaction amounts and costs to numeric values, handles any potential errors or warnings,
+  # and returns a summary of these key metrics.
+  # The function is memoised to cache results for improved performance.
 
+  default_table_if_error_occurs <- tibble(transaction_amount = 0, transaction_cost = 0, total_transactions = 0)
+
+  tryCatch(
+    expr = {
+      results <- suppressWarnings(
+        expr = {
+          data_with_transactions %>%
+            mutate(
+              transaction_amount = str_remove_all(transaction_amount, ","),
+              transaction_amount = as.numeric(transaction_amount),
+              transaction_cost = str_remove_all(transaction_cost, ","),
+              transaction_cost = as.numeric(transaction_cost)
+            ) %>%
+            summarise(
+              transaction_amount = sum(transaction_amount, na.rm = TRUE),
+              transaction_cost = sum(transaction_cost, na.rm = TRUE),
+              total_transactions = n()
+            )
+        }
+      )
+      return(results)
+    },
+    error = function(e) {
+      print(e$message)
+      return(default_table_if_error_occurs)
+    }
+  )
+}
 
 # Function Template to create a box template for shiny app
 plain_box_template <- function(height = 600, width = 6, title_text = NULL, ...) {
