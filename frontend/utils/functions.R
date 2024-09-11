@@ -320,6 +320,9 @@ create_bar_or_column_chart_apex <- function(
           effect_value = 20
         ) %>%
           set_input_zoom("zoom")
+    }, 
+    error = function(e){
+      return(e)
     }
   )
 }
