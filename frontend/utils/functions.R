@@ -296,6 +296,35 @@ create_bar_or_column_chart_func <- function(
 }
 
 
+create_bar_or_column_chart_apex <- function(
+    data_with_transactions, column_to_count, chart_type, title_text, subtitle_text, x_axis_text = NULL, y_axis_text = NULL
+    ) {
+  #
+  tryCatch(
+    expr = {
+      plotting_df <- data_with_transactions %>%
+        count(!!sym(column_to_count), name = "value") %>%
+        arrange(desc(value)) %>%
+        head(10) %>%
+        mutate(!!column_to_count := fct_reorder(!!sym(column_to_count), value))
+
+      plotting_df %>%
+        apex(aes(!!sym(column_to_count), value), type = chart_type, height = "250px") %>%
+        ax_legend(show = FALSE) %>% 
+        ax_labs(
+          title = title_text, subtitle = str_c("Showing data for ", subtitle_text), x = x_axis_text, y = y_axis_text
+        ) %>% 
+        set_input_click(
+          inputId = "click",
+          multiple = TRUE,
+          effect_value = 20
+        ) %>%
+          set_input_zoom("zoom")
+    }
+  )
+}
+
+
 
 # Base template function for rendering reactables
 render_reactables_func <- function(input_data) {
