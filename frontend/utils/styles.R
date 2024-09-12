@@ -70,5 +70,26 @@ global_modal_style <- HTML(
   "
 )
 
-# style for logout button
-logout_button_style <- "background-color: white !important; border: 0; border-radius: 20px; font-weight: bold; margin:5px; padding: 4px;"
+
+# Enhanced style for the logout button
+logout_button_style <- "
+  background-color: #ff6b6b !important; 
+  color: white; 
+  border: none; 
+  border-radius: 20px; 
+  font-weight: bold; 
+  margin: 5px; 
+  padding: 10px 20px; 
+  cursor: pointer; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  transition: all 0.3s ease;
+  height: 30px;
+"
+
+# Add hover effect to the button
+logout_button_hover_style <- "
+  button:hover {
+    background-color: #ff4c4c !important;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+"

@@ -138,15 +138,12 @@ server <- function(input, output, session) {
     delete_transaction_server("delete_transaction", access_token(), input$api_user)
   })
   
-  # Log out button
-  output$logout_button_ui <- renderUI({
-    tags$li(
-      a(icon("right-from-bracket"),
-        "Logout",
-        href = "javascript:window.location.reload(true)"
-      ),
-      class = "dropdown",
-      style = logout_button_style
-    )
-  })
+  # Log out button UI
+  # output$logout_button_ui <- renderUI({
+  #   tags$a(
+  #     HTML(paste("Logout ", icon("right-from-bracket"))),
+  #     href =  "javascript:window.location.reload(true)",
+  #     style = "text-decoration: underline; font-size: 14px; color: black;"
+  #   )
+  # })
 }
