@@ -44,18 +44,26 @@ server <- function(input, output, session) {
   
   # Trigger to show registration modal
   observeEvent(input$register, {
-    showModal(modalDialog(
-      title = "User Registration",
-      textInput("reg_name", "Full Name", placeholder = "Enter your full name", width = "100%", value = "dev"),
-      textInput("reg_email", "Email", placeholder = "Enter your email address", width = "100%", value = "dev"),
-      textInput("reg_mpesa_no", "Mpesa Number", placeholder = "Enter your Mpesa Number", width = "100%", value = "dev"),
-      passwordInput("reg_pass", "Password", placeholder = "Create a strong password", width = "100%", value = "dev"),
-      textInput("reg_username", "Username", placeholder = "Create a unique username", width = "100%", value = "dev"),
-      actionButton("submit_registration", "Register", class = "btn-primary"),
-      easyClose = FALSE,
-      size = "m",
-      footer = modalButton("Close", icon = icon("arrow-right-to-bracket"))
-    ))
+    showModal(
+      modalDialog(
+        title = div(tags$h3("User Registration", style = "color: #2d677d; font-weight: bold; text-align: center;")),
+        tags$div(
+          style = "display: flex; flex-direction: column; align-items: center;",
+          textInput("reg_name", "Full Name", placeholder = "Enter your full name", width = "100%", value = ""),
+          textInput("reg_email", "Email", placeholder = "Enter your email address", width = "100%", value = ""),
+          textInput("reg_mpesa_no", "Mpesa Number", placeholder = "Enter your Mpesa Number", width = "100%", value = ""),
+          passwordInput("reg_pass", "Password", placeholder = "Create a strong password", width = "100%", value = ""),
+          textInput("reg_username", "Username", placeholder = "Create a unique username", width = "100%", value = "")
+        ),
+        actionButton("submit_registration", "Register", class = "btn btn-primary btn-lg", style = "width: 100%;"),
+        easyClose = FALSE,
+        size = "m",
+        footer = tagList(
+          # actionButton("submit_registration", "Register", class = "btn btn-success"),
+          modalButton("Close", icon = icon("arrow-right-to-bracket"))
+        )
+      )
+    )
   })
   
   # Handle registration logic
@@ -137,13 +145,5 @@ server <- function(input, output, session) {
   observe({
     delete_transaction_server("delete_transaction", access_token(), input$api_user)
   })
-  
-  # Log out button UI
-  # output$logout_button_ui <- renderUI({
-  #   tags$a(
-  #     HTML(paste("Logout ", icon("right-from-bracket"))),
-  #     href =  "javascript:window.location.reload(true)",
-  #     style = "text-decoration: underline; font-size: 14px; color: black;"
-  #   )
-  # })
+  # end
 }
