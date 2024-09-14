@@ -359,6 +359,10 @@ render_reactables_func <- function(input_data) {
     columns = list(
       # Customize specific columns if needed
       # e.g., "column_name" = colDef(name = "Custom Name")
+      transaction_amount = colDef(name = "amount"),
+      transaction_code = colDef(name = "code"),
+      transaction_cost = colDef(name = "cost"),
+      transaction_type = colDef(name = "type")
     ),
     theme = reactableTheme(
       color = "#333",

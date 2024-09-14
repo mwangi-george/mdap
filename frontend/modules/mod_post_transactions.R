@@ -15,7 +15,7 @@ post_transaction_server <- function(id, auth_token, active_user) {
     # observe trigger button
     observeEvent(input$transaction_post_button, {
       showModal(modalDialog(
-        title = "Register a transaction",
+        title = div(tags$h3("Register a transaction", style = heading_style)),
         textAreaInput(
           inputId = ns("transaction_message"), label = "", 
           placeholder = "Paste your Mpesa Message here...",

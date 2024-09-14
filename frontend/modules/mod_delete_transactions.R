@@ -17,7 +17,7 @@ delete_transaction_server <- function(id, auth_token, active_user) {
     # Trigger to transaction deletion modal
     observeEvent(input$transaction_delete_button, {
       showModal(modalDialog(
-        title = "Delete a transaction",
+        title = div(tags$h3("Delete a transaction", style = heading_style)),
         textAreaInput(ns("transaction_code"), "Transaction Code", placeholder = "Enter transaction code here...", width = "100%"),
         actionButton(ns("perform_transaction_deletion_button"), "Delete", class = "btn-primary"),
         easyClose = TRUE,
