@@ -1,8 +1,8 @@
 source("./dependencies_load.R")
 
 server <- function(input, output, session) {
+  # Initialize an empty value to store access_token
   access_token <- reactiveVal()
-  
   
   # Authentication --------------
   observeEvent(input$login, {
@@ -37,7 +37,7 @@ server <- function(input, output, session) {
         error_msg <- login_response %>% content()
         # Show an error message if login failed
         shinyalert("Oops!", error_msg[[1]], type = "error", closeOnClickOutside = TRUE)
-        print(glue("{username} is trying to login but fails! 💔"))
+        print(glue("{username} is trying to login but fails!🚫🚫🚫🚫🚫"))
       }
     }
   })
@@ -46,7 +46,7 @@ server <- function(input, output, session) {
   observeEvent(input$register, {
     showModal(
       modalDialog(
-        title = div(tags$h3("User Registration", style = "color: #2d677d; font-weight: bold; text-align: center;")),
+        title = div(tags$h3("User Registration", style = heading_style)),
         tags$div(
           style = "display: flex; flex-direction: column; align-items: center;",
           textInput("reg_name", "Full Name", placeholder = "Enter your full name", width = "100%", value = ""),
@@ -112,7 +112,8 @@ server <- function(input, output, session) {
     
     return(query_output)
   })
-  
+
+  # Modules
   observe({
     req(input$login)
     req(transactions_data_updated())
@@ -135,7 +136,7 @@ server <- function(input, output, session) {
     req(transactions_data_updated())
     transactions_data_updated()
     
-    render_transactions_table_server("historical_transactions", transactions_data_updated())
+    render_transactions_table_server("historical_transactions", transactions_data_updated(), input$api_user)
   })
   
   observe({

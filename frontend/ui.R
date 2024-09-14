@@ -17,7 +17,7 @@ ui <- fluidPage(
   div(
     id = "login-page",
     style = "width: 500px;",
-    h3("Welcome", class = "login-header"),
+    h3("Welcome", class = "login-header", style = heading_style),
     textInput("api_user", label = "Username", placeholder = "Enter your username", value = "", width = "100%"),
     passwordInput("api_pass", "Password", placeholder = "Enter your password", value = "", width = "100%"),
     actionButton("login", "Login", class = "btn-primary", style = "width: 100%;"),

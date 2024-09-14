@@ -93,3 +93,5 @@ logout_button_hover_style <- "
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
   }
 "
+
+heading_style <-  "color: #2d677d; font-weight: bold; text-align: center;"
