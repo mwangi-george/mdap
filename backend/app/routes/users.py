@@ -26,12 +26,12 @@ def create_user_router() -> APIRouter:
         token = user_services.login_user(form_data.username, form_data.password, db)
         return token
 
-    @router.get("/fetch/all", response_model=ManyUsersResponse, status_code=status.HTTP_200_OK)
+    @router.get("/fetch/all", response_model=ManyUsersResponse, status_code=status.HTTP_200_OK, include_in_schema=False)
     async def fetch_all_users(start: int = 0, limit: int = 20, db: Session = Depends(get_db)):
         try:
             users = user_services.fetch_all_users(start=start, limit=limit, db=db)
-            users_formatted = ManyUsersResponse(users=users)
-            return users_formatted
+            # users_formatted = ManyUsersResponse(users=users)
+            return users
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
